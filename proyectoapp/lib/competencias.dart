@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
+import 'package:proyectoapp/Participantes.dart';
 import 'crearCompetencia.dart';
 import 'horario.dart';
 
@@ -133,6 +136,12 @@ class _CompetenciaPageState extends State<CompetenciaPage> {
                       onPressed: () {
                         // Imprimir "Mas tarde"
                         print('Mas tarde');
+                        Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ParticipantesInscripcion(competitionData: CompetitionData()),
+                      ),
+                    );
                       },
                       child: const Text('Más tarde'),
                     ),

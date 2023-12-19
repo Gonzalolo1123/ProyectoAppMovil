@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, avoid_print, library_private_types_in_public_api, camel_case_types, non_constant_identifier_names
 import 'package:flutter/material.dart';
 import 'crearCompetencia.dart';
 
@@ -24,7 +24,7 @@ class horarioData {
 class Horario extends StatefulWidget {
   final CompetitionData competitionData;
 
-  Horario({Key? key, required this.competitionData}) : super(key: key);
+  const Horario({Key? key, required this.competitionData}) : super(key: key);
 
   @override
   _HorarioState createState() => _HorarioState();
@@ -165,7 +165,14 @@ class _HorarioState extends State<Horario> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    print('horario creado');
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CrearCompetencia(),
+                      ),
+                    );
+                    print(
+                        'Competencia Agregada: ${horarios.map((horario) => horario.toString()).join(', ')}');
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(300, 50),
