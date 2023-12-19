@@ -3,9 +3,22 @@ import 'package:flutter/material.dart';
 import 'crearCompetencia.dart';
 
 class horarioData {
-  List<String> CategoriaH =[] ;
+  List<String> CategoriaH = [];
   List<String> CompetenciaH = [];
   String HoraH = '';
+  @override
+  String toString() {
+    if (CompetenciaH.length != CategoriaH.length) {
+      return 'Error: Competencias y Categorías tienen longitudes diferentes';
+    }
+
+    List<String> competenciasYcategorias = [];
+    for (int i = 0; i < CompetenciaH.length; i++) {
+      competenciasYcategorias.add('${CompetenciaH[i]} ${CategoriaH[i]}');
+    }
+
+    return 'Hora: $HoraH, Competencias: ${competenciasYcategorias.join(', ')}';
+  }
 }
 
 class Horario extends StatefulWidget {
@@ -21,10 +34,9 @@ class _HorarioState extends State<Horario> {
   final TextEditingController horaController = TextEditingController();
   final List<horarioData> horarios = [];
 
-  horarioData nuevoHorario = horarioData(); // Instancia para el nuevo horario
-
   @override
   Widget build(BuildContext context) {
+    horarioData Horario = horarioData();
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
@@ -67,7 +79,7 @@ class _HorarioState extends State<Horario> {
                     ),
                     MyCheckboxMenu(
                       options: widget.competitionData.selectedCategories,
-                      selectedOptions: nuevoHorario.CategoriaH,
+                      selectedOptions: Horario.CategoriaH,
                       customText: 'Selecciona Categorías',
                     ),
                     const SizedBox(height: 20),
@@ -77,7 +89,7 @@ class _HorarioState extends State<Horario> {
                     ),
                     MyCheckboxMenu(
                       options: widget.competitionData.getSelectedCompetitions(),
-                      selectedOptions: nuevoHorario.CompetenciaH,
+                      selectedOptions: Horario.CompetenciaH,
                       customText: 'Selecciona Competencia',
                     ),
                   ],
@@ -101,17 +113,44 @@ class _HorarioState extends State<Horario> {
                     keyboardType: TextInputType.datetime,
                   ),
                 ),
-                const SizedBox(height: 50),
+                const SizedBox(height: 40),
                 ElevatedButton(
                   onPressed: () {
                     // Validar el formato de la hora HH:MM
                     if (isValidHourFormat(horaController.text)) {
                       // La hora tiene el formato correcto, puedes usarla
                       String hora = horaController.text;
-                      nuevoHorario.HoraH = hora;
-                      horarios.add(nuevoHorario);
-                      // Aquí puedes agregar la lógica para crear el horario
-                      print('Hora de la competencia: $hora');
+
+                      // Buscar un horario existente con la misma hora
+                      horarioData horarioExistente = horarios.firstWhere(
+                        (horario) => horario.HoraH == hora,
+                        orElse: () {
+                          // Si no existe, crear un nuevo horario
+                          horarioData nuevoHorario = horarioData();
+                          nuevoHorario.HoraH = hora;
+                          return nuevoHorario;
+                        },
+                      );
+
+                      // Crear una nueva instancia de horarioData
+                      horarioData nuevoHorario = horarioExistente;
+
+                      // Configurar el nuevo horario con los datos ingresados
+                      nuevoHorario.CategoriaH.addAll(Horario.CategoriaH);
+                      nuevoHorario.CompetenciaH.addAll(Horario.CompetenciaH);
+
+                      // Agregar el nuevo horario a la lista
+                      if (!horarios.contains(nuevoHorario)) {
+                        horarios.add(nuevoHorario);
+                      }
+
+                      // Mostrar el horario agregado
+                      print(
+                          'Competencia Agregada: ${horarios.map((horario) => horario.toString()).join(', ')}');
+                      // Limpiar checkboxes y TextField
+                      horaController.clear();
+                      Horario.CategoriaH.clear();
+                      Horario.CompetenciaH.clear();
                     } else {
                       // La hora no tiene el formato correcto
                       print('Formato de hora incorrecto. Debe ser HH:MM');
@@ -122,6 +161,17 @@ class _HorarioState extends State<Horario> {
                     padding: const EdgeInsets.all(15.0),
                   ),
                   child: const Text('Agregar al Horario'),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    print('horario creado');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(300, 50),
+                    padding: const EdgeInsets.all(15.0),
+                  ),
+                  child: const Text('Crear Horario'),
                 ),
               ],
             ),
